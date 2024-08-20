@@ -1,0 +1,3 @@
+https://github.com/lclevy/canon_cr3?tab=readme-ov-file#cr3-file-Structure
+
+https://github.com/lclevy/canon_cr3/blob/master/output/m50.txt
