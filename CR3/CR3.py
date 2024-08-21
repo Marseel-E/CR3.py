@@ -57,6 +57,71 @@ class CR3:
 		return round(mb(len(self.data)))
 
 
+	def _parse(self) -> None:
+		from time import time
+
+		clock: float = time()
+
+		data: dict[str, list] = {}
+
+		tags: list[str] = [
+			"ftyp",
+			"moov",
+			"uuid",
+			"mdat",
+			"free",
+			"mvhd",
+			"trak",
+			"tkhd",
+			"mdia",
+			"hdlr",
+			"minf",
+			"dinf",
+			"stbl",
+			"dref",
+			"stsd",
+			"stts",
+			"stsc",
+			"stsz",
+			"co64",
+			"nmhd",
+		]
+
+		offset: int = 0
+		for i in range(len(self.data)):
+			a: int = 3
+			b = self.data[offset:i + a]
+
+			try:
+				tag: str = b.decode("utf-8")
+			except:
+				try:
+					int.from_bytes(b)
+				except:
+					print(b)
+
+			if tag in tags:
+				size: int = int.from_bytes(
+					self.data[offset - 4:i - 1]
+				)
+
+				print(tag, size, offset)
+
+				data[f"{tag}::{size}"] = str(self.data[i + a:size][:12]) # content
+
+			offset = i
+
+		from json import dumps
+
+		with open("CR3_parsed.json", '+w') as file:
+			file.write(
+				dumps(data)
+			)
+
+			print(f"Parsed in {round(time() - clock)}s")
+			print(Path.cwd(), "/CR3_parsed.json", sep="")
+
+
 	def parse(self, text_file: bool = False) -> None:
 		"""
 			Parses the file binary into readable text.
@@ -87,7 +152,7 @@ class CR3:
 		with open("CR3_dump.txt", '+w') as file:
 			file.write(text)
 
-		print(Path.cwd(), "/CR3_dump.txt", sep="")
+		print(Path.cwd(), "/CR3_dump.bin", sep="")
 
 		
 
